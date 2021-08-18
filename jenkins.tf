@@ -1,5 +1,5 @@
-resource "aws_security_group" "jenkins" {
-  name        = "jenkins"
+resource "aws_security_group" "jenkins-sg" {
+  name        = "jenkins-sg"
   description = "Allow jenkins inbound traffic"
   vpc_id      = aws_vpc.dev.id
 
@@ -8,7 +8,7 @@ resource "aws_security_group" "jenkins" {
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
-    security_groups    = [aws_security_group.bastion.id]
+    security_groups    = [aws_security_group.bastion-sg.id]
    
   }
   ingress {
@@ -42,10 +42,9 @@ data "template_file" "jenkins" {
   resource "aws_instance" "jenkins" {
   ami           = var.ami
   instance_type = var.type
-  #iam_instance_profile = "${aws_iam_instance_profile.ec2_profile.name}"
   key_name = aws_key_pair.dev.id
   subnet_id = aws_subnet.private[0].id
-  vpc_security_group_ids = ["${aws_security_group.jenkins.id}"]
+  vpc_security_group_ids = ["${aws_security_group.jenkins-sg.id}"]
   user_data = data.template_file.jenkins.rendered
   tags = {
     Name = "${var.envname}-jenkins"

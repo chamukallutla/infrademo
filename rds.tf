@@ -8,7 +8,7 @@ resource "aws_security_group" "rds" {
     from_port        = 3306
     to_port          = 3306
     protocol         = "tcp"
-    security_groups     = [aws_security_group.devapi.id]
+    security_groups     = [aws_security_group.devapi-sg.id]
    
   }
  ingress {
@@ -16,7 +16,7 @@ resource "aws_security_group" "rds" {
     from_port        = 3306
     to_port          = 3306
     protocol         = "tcp"
-    security_groups     = [aws_security_group.devapp.id]
+    security_groups     = [aws_security_group.devapp-sg.id]
    
   }
   ingress {
@@ -24,7 +24,15 @@ resource "aws_security_group" "rds" {
     from_port        = 3306
     to_port          = 3306
     protocol         = "tcp"
-    security_groups     = [aws_security_group.bastion.id]
+    security_groups     = [aws_security_group.bastion-sg.id]
+   
+  }
+  ingress {
+    description      = "rds from VPC"
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+    security_groups     = [aws_security_group.jenkins-sg.id]
    
   }
    ingress {
