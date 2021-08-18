@@ -1,5 +1,5 @@
-resource "aws_security_group" "bastion" {
-  name        = "bastion"
+resource "aws_security_group" "bastion-sg" {
+  name        = "bastion-sg"
   description = "Allow ssh inbound traffic"
   vpc_id      = aws_vpc.dev.id
 
@@ -32,11 +32,10 @@ resource "aws_key_pair" "dev" {
   resource "aws_instance" "bastion" {
   ami           = var.ami
   instance_type = var.type
-  #iam_instance_profile = "${aws_iam_instance_profile.ec2_profile.name}"
   key_name = aws_key_pair.dev.id
   subnet_id = aws_subnet.public[0].id
-  vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
+  vpc_security_group_ids = ["${aws_security_group.bastion-sg.id}"]
   tags = {
-    Name = "${var.envname}-jenkins"
+    Name = "${var.envname}-bastion"
   }
 }

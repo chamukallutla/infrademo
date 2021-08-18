@@ -1,4 +1,4 @@
-resource "aws_lb" "jenkins" {
+resource "aws_lb" "jenkins-alb" {
   name               = "jenkins-lb-tf"
   internal           = false
   load_balancer_type = "application"
@@ -8,15 +8,15 @@ resource "aws_lb" "jenkins" {
 
 
   tags = {
-    Environment = "jenkins"
+    Environment = "jenkins-alb"
   }
 }
 
 
 # instance target group
 
-resource "aws_lb_target_group" "jenkins" {
-  name     = "jenkins"
+resource "aws_lb_target_group" "jenkins-tg" {
+  name     = "jenkins-tg"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = aws_vpc.dev.id
@@ -25,7 +25,7 @@ resource "aws_lb_target_group" "jenkins" {
 
 
 resource "aws_lb_target_group_attachment" "attach-tg" {
-  target_group_arn = aws_lb_target_group.jenkins.arn
+  target_group_arn = aws_lb_target_group.jenkins-tg.arn
   target_id        = aws_instance.jenkins.id
   port             = 8080
 }
@@ -34,13 +34,13 @@ resource "aws_lb_target_group_attachment" "attach-tg" {
 
 
 resource "aws_lb_listener" "r_end" {
-  load_balancer_arn = aws_lb.jenkins.arn
+  load_balancer_arn = aws_lb.jenkins-alb.arn
   port              = "80"
   protocol          = "HTTP"
 
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.jenkins.arn
+    target_group_arn = aws_lb_target_group.jenkins-tg.arn
   }
 }
